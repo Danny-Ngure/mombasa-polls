@@ -1,0 +1,1069 @@
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Mombasa Ni Yetu Polls</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Inter:wght@400;500;600&display=swap">
+
+<style>
+/* Layout: single centred column, max 1040px. Sticky header carries the countdown.
+   Candidate cards in a responsive grid; results are horizontal percentage bars. */
+:root{
+  --bg:#F2F5F6; --surface:#FFFFFF; --surface-2:#E7EEF0; --surface-3:#DCE7EA;
+  --ink:#0B2A33; --ink-2:#44616B; --muted:#7A8F96; --line:#D3E0E3;
+  --accent:#0E7C86; --accent-2:#0A646C; --on-accent:#FFFFFF;
+  --warm:#C4552B; --warm-soft:#FBEDE7;
+  --danger:#A3261F; --ok:#2E7D4F;
+  --shadow:0 1px 2px rgba(11,42,51,.06), 0 8px 24px rgba(11,42,51,.06);
+  --p-uda:#D7AC00; --p-odm:#C9600D; --p-lmp:#52B6E0; --p-wiper:#1B6E3C; --p-tnd:#8A3A86;
+  --city-op:.92; --city-filter:saturate(.95); --logo-halo:none;
+  --font-display:'Archivo','Segoe UI',system-ui,sans-serif;
+  --font-body:'Inter','Segoe UI',system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#071A20; --surface:#0D2730; --surface-2:#143039; --surface-3:#1B3C47;
+  --ink:#E6EFF1; --ink-2:#A9C2C9; --muted:#7D99A1; --line:#1F414C;
+  --accent:#36AEB4; --accent-2:#52C3C8; --on-accent:#04171B;
+  --warm:#E8835A; --warm-soft:#2A1A14;
+  --danger:#E8736B; --ok:#5CBC86;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
+  --p-uda:#DCB02A; --p-odm:#B85716; --p-lmp:#4FB4DE; --p-wiper:#1E9C66; --p-tnd:#A55CA1;
+  --city-op:.6; --city-filter:saturate(.78) brightness(.58);
+  --logo-halo:drop-shadow(0 0 1px rgba(255,255,255,.95)) drop-shadow(0 0 3px rgba(255,255,255,.5));
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#071A20; --surface:#0D2730; --surface-2:#143039; --surface-3:#1B3C47;
+  --ink:#E6EFF1; --ink-2:#A9C2C9; --muted:#7D99A1; --line:#1F414C;
+  --accent:#36AEB4; --accent-2:#52C3C8; --on-accent:#04171B;
+  --warm:#E8835A; --warm-soft:#2A1A14;
+  --danger:#E8736B; --ok:#5CBC86;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
+  --p-uda:#DCB02A; --p-odm:#B85716; --p-lmp:#4FB4DE; --p-wiper:#1E9C66; --p-tnd:#A55CA1;
+  --city-op:.6; --city-filter:saturate(.78) brightness(.58);
+  --logo-halo:drop-shadow(0 0 1px rgba(255,255,255,.95)) drop-shadow(0 0 3px rgba(255,255,255,.5));
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);
+  font-size:16px;line-height:1.55;margin:0;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);
+  z-index:40;background:var(--surface)}
+h1,h2,h3{font-family:var(--font-display);text-wrap:balance;margin:0;line-height:1.2}
+p{margin:0}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* Backdrop: a photograph of the Tusks on Moi Avenue behind the masthead.
+   Two scrims - one across, one down - keep the wordmark legible over it. */
+.backdrop{position:absolute;top:0;left:0;right:0;height:600px;
+  z-index:0;pointer-events:none;overflow:hidden}
+.backdrop .photo{position:absolute;inset:0;
+  background:url('img/mombasa-backdrop.jpg') 56% 44%/cover no-repeat;
+  opacity:var(--city-op);filter:var(--city-filter)}
+.bpscrim{position:absolute;inset:0;background:
+  linear-gradient(90deg,
+    color-mix(in srgb,var(--bg) 84%,transparent) 0%,
+    color-mix(in srgb,var(--bg) 54%,transparent) 46%,
+    color-mix(in srgb,var(--bg) 26%,transparent) 100%),
+  linear-gradient(180deg,
+    color-mix(in srgb,var(--bg) 24%,transparent) 0%,
+    color-mix(in srgb,var(--bg) 34%,transparent) 44%,
+    color-mix(in srgb,var(--bg) 84%,transparent) 76%,
+    var(--bg) 100%)}
+
+.wrap{position:relative;z-index:1;max-width:1040px;margin:0 auto;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:0 56px}
+
+/* ---- header ---- */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:var(--surface);
+  border-bottom:1px solid var(--line)}
+.topbar-in{max-width:1040px;margin:0 auto;display:flex;flex-wrap:wrap;gap:10px 18px;
+  align-items:center;justify-content:space-between;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:11px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand-mark{width:26px;height:26px;flex:none}
+.brand-name{font-family:var(--font-display);font-weight:700;font-size:1.02rem;letter-spacing:-.01em}
+.clock{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:.73rem;font-weight:600;
+  letter-spacing:.06em;text-transform:uppercase;padding:4px 9px;border-radius:999px;
+  border:1px solid var(--line);color:var(--ink-2);background:var(--surface-2)}
+.pill.live{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 35%,transparent);
+  background:color-mix(in srgb,var(--ok) 11%,transparent)}
+.pill.shut{color:var(--danger);border-color:color-mix(in srgb,var(--danger) 35%,transparent);
+  background:color-mix(in srgb,var(--danger) 10%,transparent)}
+.dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+.pill.live .dot{animation:beat 2.2s ease-in-out infinite}
+@keyframes beat{0%,100%{opacity:1}50%{opacity:.35}}
+.countdown{font-variant-numeric:tabular-nums;font-weight:600;font-size:.95rem;
+  font-family:var(--font-display);letter-spacing:-.01em}
+.countdown small{display:block;font-size:.66rem;font-weight:500;letter-spacing:.07em;
+  text-transform:uppercase;color:var(--muted);font-family:var(--font-body)}
+
+/* ---- hero ---- */
+.hero{padding-block:40px 26px}
+.eyebrow{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);
+  font-weight:600;margin-bottom:13px}
+.wordmark{font-family:var(--font-display);font-weight:700;
+  font-size:clamp(2.4rem,7.6vw,4.3rem);line-height:1.02;letter-spacing:-.038em}
+.wordmark em{font-style:normal;color:var(--accent)}
+.ask{font-family:var(--font-display);font-weight:600;color:var(--ink);
+  font-size:clamp(1.14rem,2.6vw,1.58rem);line-height:1.3;letter-spacing:-.016em;
+  margin-top:16px;max-width:36ch;text-wrap:balance}
+
+/* ---- panels ---- */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;
+  padding:20px;box-shadow:var(--shadow);margin-top:20px}
+.panel-head{margin-bottom:16px}
+.panel-head h2{font-size:1.12rem;font-weight:600;letter-spacing:-.015em}
+
+/* ---- details dialog ---- */
+.dlg{border:1px solid var(--line);border-radius:16px;padding:22px;width:100%;
+  max-width:min(660px,94vw);background:var(--surface);color:var(--ink);
+  box-shadow:0 24px 64px rgba(4,20,26,.34)}
+.dlg::backdrop{background:rgba(5,20,26,.58)}
+.dlg-head{display:flex;gap:14px;align-items:center;justify-content:space-between;
+  margin-bottom:17px}
+.dlg-head h2{font-size:1.24rem;font-weight:700;letter-spacing:-.018em}
+.field.wide{grid-column:1/-1}
+.dlg-x{flex:none;width:33px;height:33px;border-radius:9px;border:1px solid var(--line);
+  background:var(--surface-2);color:var(--ink-2);font-size:1.25rem;line-height:1;
+  cursor:pointer;font-family:inherit}
+.dlg-x:hover{color:var(--ink);border-color:var(--accent)}
+.dlg-pick{display:flex;align-items:center;gap:13px;background:var(--surface-2);
+  border:1px solid var(--line);border-radius:12px;padding:11px 13px;margin-bottom:17px}
+.dlg-pick img{width:52px;height:52px;border-radius:9px;object-fit:cover;
+  object-position:50% 16%;flex:none}
+.dp-lbl{font-size:.67rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--accent);font-weight:700}
+.dp-name{font-family:var(--font-display);font-weight:700;font-size:1.05rem;
+  letter-spacing:-.018em;margin-top:1px}
+.dp-party{font-size:.83rem;color:var(--ink-2)}
+@media (max-width:560px){.dlg{padding:18px;border-radius:14px}}
+.panel-head p{color:var(--ink-2);font-size:.88rem;margin-top:5px;max-width:62ch}
+.step{display:inline-flex;align-items:center;justify-content:center;width:21px;height:21px;
+  border-radius:50%;background:var(--accent);color:var(--on-accent);font-size:.72rem;
+  font-weight:700;margin-right:9px;font-family:var(--font-display)}
+
+/* ---- form ---- */
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:15px}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+label.lbl{font-size:.8rem;font-weight:600;color:var(--ink-2);letter-spacing:.01em}
+.req{color:var(--warm)}
+input[type=text],select{font:inherit;font-size:.94rem;color:var(--ink);background:var(--surface);
+  border:1px solid var(--line);border-radius:9px;padding:9px 11px;width:100%;min-width:0}
+input[type=text]:focus,select:focus{border-color:var(--accent)}
+select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),
+  linear-gradient(135deg,var(--muted) 50%,transparent 50%);
+  background-position:calc(100% - 17px) 50%,calc(100% - 12px) 50%;
+  background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:34px}
+.hint{font-size:.76rem;color:var(--muted)}
+.err{font-size:.78rem;color:var(--danger);font-weight:500}
+.field.bad input,.field.bad select{border-color:var(--danger)}
+
+/* ---- candidates: one per row, so every photo, name and party symbol
+       lands on the same vertical rhythm and stays large enough to read ---- */
+.cands{display:flex;flex-direction:column;gap:10px;margin-top:4px}
+.cand{position:relative;display:grid;grid-template-columns:auto auto 1fr auto;
+  align-items:center;gap:16px;width:100%;padding:0 16px 0 0;text-align:left;
+  background:var(--surface);border:1.5px solid var(--line);border-radius:14px;
+  overflow:hidden;cursor:pointer;font:inherit;color:inherit;
+  transition:border-color .14s ease, box-shadow .14s ease, transform .14s ease}
+.cand:hover{border-color:var(--accent);transform:translateY(-1px);box-shadow:var(--shadow)}
+.cand[aria-pressed="true"]{border-color:var(--accent);
+  box-shadow:0 0 0 2.5px color-mix(in srgb,var(--accent) 26%,transparent)}
+.cand-rail{grid-row:1/-1;align-self:stretch;width:6px;display:block}
+.cand-photo{display:block;width:138px;height:138px;margin:13px 0;border-radius:13px;
+  overflow:hidden;background:var(--surface-2);flex:none}
+.cand-photo img{width:100%;height:100%;object-fit:cover;object-position:50% 16%;display:block}
+.cand-info{display:flex;flex-direction:column;gap:8px;min-width:0;padding:11px 0}
+.cand-name{font-family:var(--font-display);font-weight:700;font-size:1.52rem;
+  letter-spacing:-.026em;line-height:1.16}
+.cand-party{display:flex;align-items:center;gap:12px;min-width:0}
+/* logos sit directly on the card - no frame, no backing box */
+.cand-party img{width:62px;height:62px;object-fit:contain;flex:none;max-width:100%;
+  filter:var(--logo-halo)}
+.cand-party span{font-size:1.04rem;font-weight:500;color:var(--ink-2);min-width:0;line-height:1.3}
+.chip{display:inline-flex;align-items:center;justify-content:center;
+  font-size:.95rem;font-weight:700;border-radius:10px;padding:11px 30px;white-space:nowrap;
+  background:var(--accent);color:var(--on-accent);border:1px solid var(--accent)}
+.cand:hover .chip,.cand:focus-visible .chip{background:var(--accent-2);border-color:var(--accent-2)}
+@media (max-width:560px){
+  .cand{grid-template-columns:auto auto 1fr;gap:12px;padding-right:12px}
+  .cand-photo{width:100px;height:100px}
+  .cand-name{font-size:1.2rem}
+  .cand-party img{width:48px;height:48px}
+  .cand-party span{font-size:.94rem}
+  .cand .chip{grid-column:2/-1;justify-self:start;margin-bottom:12px}
+}
+
+/* ---- buttons ---- */
+.btn{font:inherit;font-weight:600;font-size:.95rem;border-radius:10px;padding:11px 20px;
+  border:1px solid transparent;cursor:pointer;display:inline-flex;align-items:center;
+  justify-content:center;gap:8px}
+.btn-primary{background:var(--accent);color:var(--on-accent)}
+.btn-primary:hover{background:var(--accent-2)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed}
+.btn-ghost{background:var(--surface);color:var(--ink-2);border-color:var(--line);
+  font-size:.85rem;padding:8px 14px}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn-danger{background:var(--surface);color:var(--danger);
+  border-color:color-mix(in srgb,var(--danger) 40%,transparent);font-size:.85rem;padding:8px 14px}
+.submitbar{display:flex;flex-wrap:wrap;gap:13px;align-items:center;margin-top:19px;
+  padding-top:17px;border-top:1px solid var(--line)}
+.submitbar .note{font-size:.8rem;color:var(--muted);flex:1;min-width:190px}
+
+/* ---- results ---- */
+.confirm{display:flex;gap:11px;align-items:flex-start;background:color-mix(in srgb,var(--ok) 10%,transparent);
+  border:1px solid color-mix(in srgb,var(--ok) 32%,transparent);border-radius:11px;
+  padding:13px 15px;margin-bottom:4px}
+.confirm svg{color:var(--ok);flex:none;margin-top:2px}
+.confirm p{font-size:.95rem;font-weight:500}
+/* Each result row carries its party colour in --pc, which drives the rail,
+   the row tint, the bar and the label - so the party colour leads the row.
+   Coloured TEXT is mixed toward the ink so it stays readable on both themes. */
+.leader{--pc:var(--accent);display:flex;align-items:center;gap:17px;
+  background:color-mix(in srgb,var(--pc) 12%,var(--surface-2));
+  border:1px solid color-mix(in srgb,var(--pc) 34%,var(--line));
+  border-left:8px solid var(--pc);
+  border-radius:13px;padding:17px;margin-bottom:20px}
+.leader img{width:78px;height:78px;border-radius:11px;object-fit:cover;
+  object-position:50% 16%;flex:none}
+.leader-txt{min-width:0;flex:1}
+.leader-lbl{font-size:.7rem;letter-spacing:.13em;text-transform:uppercase;color:var(--warm);
+  font-weight:700}
+.leader-name{font-family:var(--font-display);font-weight:700;font-size:1.62rem;
+  letter-spacing:-.028em;margin-top:2px;line-height:1.14}
+.leader-party{font-size:1.02rem;font-weight:700;
+  color:color-mix(in srgb,var(--pc) 62%,var(--ink))}
+.leader-pct{font-family:var(--font-display);font-weight:700;font-size:2.4rem;
+  font-variant-numeric:tabular-nums;letter-spacing:-.032em;flex:none;
+  color:color-mix(in srgb,var(--pc) 62%,var(--ink))}
+
+.bars{display:flex;flex-direction:column;gap:8px}
+.bar-row{--pc:var(--accent);display:grid;grid-template-columns:auto auto 1fr auto;
+  gap:15px;align-items:center;padding:0 14px 0 0;border-radius:12px;overflow:hidden;
+  background:color-mix(in srgb,var(--pc) 9%,transparent)}
+.bar-row:hover,.bar-row:focus-within{background:color-mix(in srgb,var(--pc) 17%,transparent)}
+.bar-rail{grid-row:1/-1;align-self:stretch;width:8px;background:var(--pc);display:block}
+.bar-face{width:60px;height:60px;border-radius:10px;object-fit:cover;
+  object-position:50% 16%;flex:none;margin:13px 0}
+.bar-mid{min-width:0;padding:13px 0}
+.bar-label{display:flex;align-items:baseline;gap:11px;flex-wrap:wrap;margin-bottom:9px}
+.bar-name{font-family:var(--font-display);font-weight:700;font-size:1.38rem;
+  letter-spacing:-.026em;line-height:1.15}
+.bar-party{font-size:.97rem;font-weight:700;
+  color:color-mix(in srgb,var(--pc) 62%,var(--ink))}
+.bar-track{height:24px;background:color-mix(in srgb,var(--pc) 16%,var(--surface-3));
+  border-radius:12px;overflow:hidden}
+.bar-fill{height:100%;border-radius:0 12px 12px 0;min-width:5px;background:var(--pc);
+  transition:width .5s cubic-bezier(.22,1,.36,1)}
+.bar-pct{font-family:var(--font-display);font-weight:700;font-size:1.72rem;
+  font-variant-numeric:tabular-nums;letter-spacing:-.03em;min-width:92px;text-align:right}
+@media (max-width:560px){
+  .bar-row{gap:11px;padding-right:11px}
+  .bar-face{width:46px;height:46px}
+  .bar-name{font-size:1.1rem}
+  .bar-party{font-size:.86rem}
+  .bar-track{height:18px}
+  .bar-pct{font-size:1.26rem;min-width:70px}
+  .leader{gap:13px;padding:14px}
+  .leader img{width:58px;height:58px}
+  .leader-name{font-size:1.22rem}
+  .leader-pct{font-size:1.8rem}
+}
+
+.demo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(265px,1fr));gap:24px}
+.demo-h{font-size:.73rem;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-2);
+  font-weight:700;margin-bottom:11px}
+.drow{display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:center;
+  padding:5px 0;font-size:.86rem}
+.drow .dl{color:var(--ink-2);min-width:0}
+.drow .dp{font-weight:600;font-variant-numeric:tabular-nums;text-align:right}
+.dtrack{grid-column:1/-1;height:6px;background:var(--surface-3);border-radius:4px;overflow:hidden}
+.dfill{height:100%;background:var(--accent);border-radius:0 3px 3px 0;min-width:2px;
+  transition:width .5s cubic-bezier(.22,1,.36,1)}
+
+.privacy{display:flex;gap:10px;align-items:flex-start;margin-top:20px;padding-top:16px;
+  border-top:1px solid var(--line);font-size:.84rem;color:var(--ink-2)}
+.privacy svg{flex:none;margin-top:2px;color:var(--muted)}
+.stamp{font-size:.76rem;color:var(--muted);margin-top:11px;font-variant-numeric:tabular-nums}
+
+table.tbl{width:100%;border-collapse:collapse;font-size:.85rem}
+table.tbl th,table.tbl td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+table.tbl th{font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+  font-weight:700;white-space:nowrap}
+table.tbl td.num{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.tblwrap{overflow-x:auto;margin-top:12px;border:1px solid var(--line);border-radius:10px}
+.tbl-invalid{opacity:.5}
+
+/* ---- notices ---- */
+.notice{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px;
+  margin-top:20px;box-shadow:var(--shadow)}
+.notice h2{font-size:1.05rem;font-weight:600;margin-bottom:7px}
+.notice p{color:var(--ink-2);font-size:.9rem;max-width:62ch}
+.skel{height:11px;border-radius:6px;background:var(--surface-2);margin-bottom:9px}
+
+/* ---- admin ---- */
+.admin{border-color:color-mix(in srgb,var(--warm) 40%,transparent)}
+.admin .panel-head h2{color:var(--warm)}
+.adminrow{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin-bottom:15px}
+.kv{display:flex;flex-wrap:wrap;gap:7px 22px;font-size:.84rem;color:var(--ink-2);margin-bottom:15px}
+.kv b{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
+.switch{display:flex;align-items:center;gap:9px;font-size:.84rem;color:var(--ink-2);
+  cursor:pointer;padding:7px 0}
+.switch input{width:17px;height:17px;accent-color:var(--accent);flex:none}
+footer{margin-top:34px;padding-top:19px;border-top:1px solid var(--line);
+  font-size:.79rem;color:var(--muted);display:flex;flex-direction:column;gap:5px}
+.sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+  clip:rect(0,0,0,0);white-space:nowrap;border:0}
+</style>
+
+<div class="backdrop" aria-hidden="true">
+  <div class="photo"></div>
+  <div class="bpscrim"></div>
+</div>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <path d="M4 23 C 10 20 14 25 20 22 C 24 20 27 22 29 21" stroke="var(--accent)"
+              stroke-width="2.1" stroke-linecap="round"/>
+        <path d="M15 19 L15 5 L24 19 Z" fill="var(--accent)" opacity=".85"/>
+        <path d="M13 19 L13 10 L8 19 Z" fill="var(--warm)" opacity=".8"/>
+      </svg>
+      <span class="brand-name">Mombasa Ni Yetu Polls</span>
+    </div>
+    <div class="clock">
+      <span id="statusPill" class="pill"><span class="dot"></span><span id="statusTxt">Loading</span></span>
+      <div class="countdown"><span id="cdVal">--:--:--</span><small id="cdLbl">Time remaining</small></div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section class="hero">
+    <div class="eyebrow">Mombasa County &middot; Governorship opinion poll</div>
+    <h1 class="wordmark">Mombasa <em>Ni Yetu</em> Polls</h1>
+    <p class="ask">If elections were held today, who would be your Governor choice?</p>
+  </section>
+
+  <main id="main">
+    <div id="bootState" class="notice">
+      <h2>Loading the poll</h2>
+      <p>Connecting to the live results service.</p>
+      <div style="margin-top:14px">
+        <div class="skel" style="width:70%"></div><div class="skel" style="width:48%"></div>
+        <div class="skel" style="width:60%;margin-bottom:0"></div>
+      </div>
+    </div>
+
+    <!-- ============ VOTE VIEW ============ -->
+    <div id="voteView" hidden>
+      <section class="panel">
+        <div class="cands" id="candList" aria-label="Candidates"></div>
+        <span class="err" id="e-cand" hidden style="display:block;margin-top:11px">
+          Please select a candidate.</span>
+      </section>
+    </div>
+
+    <dialog id="detailsDlg" class="dlg" aria-labelledby="dlgTitle">
+      <div class="dlg-head">
+        <h2 id="dlgTitle">Fill the form to submit vote</h2>
+        <button type="button" class="dlg-x" id="dlgClose" aria-label="Close">&#215;</button>
+      </div>
+      <div class="dlg-pick" id="dlgPick"></div>
+      <div class="grid2">
+        <div class="field wide" id="f-name">
+          <label class="lbl" for="fullName">Full name <span class="req">*</span></label>
+          <input type="text" id="fullName" autocomplete="name" maxlength="80"
+                 placeholder="Enter your full name">
+          <span class="err" id="e-name" hidden>Please enter your full name.</span>
+        </div>
+        <div class="field" id="f-age">
+          <label class="lbl" for="ageBracket">Age bracket <span class="req">*</span></label>
+          <select id="ageBracket">
+            <option value="">Select</option>
+            <option>Under 18</option><option>18–24</option><option>25–34</option>
+            <option>35–44</option><option>45–54</option><option>55–64</option><option>65+</option>
+          </select>
+          <span class="err" id="e-age" hidden>Please choose an age bracket.</span>
+        </div>
+        <div class="field" id="f-gen">
+          <label class="lbl" for="gender">Gender <span class="req">*</span></label>
+          <select id="gender">
+            <option value="">Select</option>
+            <option>Male</option><option>Female</option>
+          </select>
+          <span class="err" id="e-gen" hidden>Please choose an option.</span>
+        </div>
+        <div class="field wide" id="f-con">
+          <label class="lbl" for="constituency">Constituency <span class="req">*</span></label>
+          <select id="constituency">
+            <option value="">Select</option>
+            <option>Changamwe</option><option>Jomvu</option><option>Kisauni</option>
+            <option>Likoni</option><option>Mvita</option><option>Nyali</option>
+          </select>
+          <span class="err" id="e-con" hidden>Please choose a constituency.</span>
+        </div>
+      </div>
+      <div class="submitbar">
+        <button type="button" class="btn btn-primary" id="castBtn">Submit Vote</button>
+        <span class="note err" id="castNote"></span>
+      </div>
+    </dialog>
+
+    <!-- ============ RESULTS VIEW ============ -->
+    <div id="resultsView" hidden>
+      <section class="panel">
+        <div class="confirm" id="confirmBox">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+            <circle cx="9" cy="9" r="7.8" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M5.6 9.2 L7.9 11.4 L12.4 6.5" stroke="currentColor" stroke-width="1.9"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <p>Thank you — your vote is recorded. These are the live results.</p>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="standingsH">
+        <div class="panel-head">
+          <h2 id="standingsH">Live standings</h2>
+          <p>Share of all votes cast so far. Updates automatically as new votes arrive.</p>
+        </div>
+        <div id="leaderBox"></div>
+        <div class="bars" id="bars" role="img" aria-label="Candidate vote share"></div>
+        <div id="tableView" hidden>
+          <div class="tblwrap">
+            <table class="tbl">
+              <caption class="sr">Candidate vote share</caption>
+              <thead><tr><th scope="col">Candidate</th><th scope="col">Party</th>
+                <th scope="col" style="text-align:right">Share</th></tr></thead>
+              <tbody id="tableBody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div style="margin-top:14px;display:flex;gap:11px;flex-wrap:wrap;align-items:center">
+          <button type="button" class="btn btn-ghost" id="tblToggle" aria-expanded="false">
+            View as table</button>
+          <span class="stamp" id="stamp"></span>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="demoH">
+        <div class="panel-head">
+          <h2 id="demoH">Who is voting</h2>
+          <p>Anonymised breakdown of everyone who has voted so far.</p>
+        </div>
+        <div class="demo-grid">
+          <div><div class="demo-h">By age bracket</div><div id="ageBars"></div></div>
+          <div><div class="demo-h">By gender</div><div id="genBars"></div></div>
+        </div>
+        <div class="privacy">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M8 1.6 L13.2 3.8 V8 c0 3.2-2.3 5.3-5.2 6.4C5.1 13.3 2.8 11.2 2.8 8 V3.8 Z"
+                  stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+          </svg>
+          <p>Constituency is collected but not displayed publicly. Names are stored securely for
+             verification and audit purposes.</p>
+        </div>
+      </section>
+    </div>
+
+    <!-- ============ STATE NOTICES ============ -->
+    <div id="noticeBox" hidden></div>
+
+    <!-- ============ ADMIN ============ -->
+    <section class="panel admin" id="adminPanel" hidden aria-labelledby="adminH">
+      <div class="panel-head">
+        <h2 id="adminH">Administrator panel</h2>
+        <p>Visible only to the poll owner. Everything below, including constituency and voter
+           names, is private to this panel.</p>
+      </div>
+      <div class="kv" id="adminStats"></div>
+      <div class="adminrow" id="adminControls"></div>
+      <label class="switch"><input type="checkbox" id="pubAfter">
+        <span>Publish final results publicly once the poll closes
+          (otherwise results stay visible only to people who voted)</span></label>
+      <div class="field" style="margin:13px 0 15px;max-width:360px">
+        <label class="lbl" for="contactAddr">Data-deletion contact shown to voters</label>
+        <input type="text" id="contactAddr" maxlength="120" placeholder="e.g. privacy@yourdomain.co.ke">
+        <span class="hint">Appears in the footer so voters can request erasure. Leave blank to hide.</span>
+      </div>
+      <div class="adminrow">
+        <button type="button" class="btn btn-ghost" id="saveCfg">Save settings</button>
+        <button type="button" class="btn btn-ghost" id="csvBtn">Export CSV</button>
+        <span class="stamp" id="adminMsg"></span>
+      </div>
+      <div class="demo-h" style="margin-top:20px">Raw submissions</div>
+      <div class="tblwrap">
+        <table class="tbl">
+          <caption class="sr">Raw voter submissions</caption>
+          <thead><tr>
+            <th scope="col">Submitted</th><th scope="col">Full name</th>
+            <th scope="col">Constituency (hidden publicly)</th><th scope="col">Age</th>
+            <th scope="col">Gender</th><th scope="col">Candidate</th>
+            <th scope="col">Voter ref</th><th scope="col">Status</th><th scope="col"></th>
+          </tr></thead>
+          <tbody id="adminRows"></tbody>
+        </table>
+      </div>
+      <div class="demo-h" style="margin-top:20px">Audit trail</div>
+      <div class="tblwrap">
+        <table class="tbl">
+          <caption class="sr">Audit trail</caption>
+          <thead><tr><th scope="col">When</th><th scope="col">Action</th><th scope="col">Detail</th></tr></thead>
+          <tbody id="auditRows"></tbody>
+        </table>
+      </div>
+      <div class="privacy">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M8 1.6 L13.2 3.8 V8 c0 3.2-2.3 5.3-5.2 6.4C5.1 13.3 2.8 11.2 2.8 8 V3.8 Z"
+                stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+        </svg>
+        <p><strong>Legal &amp; ethical notice.</strong> Confirm compliance with Kenyan election and
+          data-protection law (including the Data Protection Act, 2019) before publishing these
+          results. Publish them only as an unofficial opinion poll, never as an election result.
+          Personal data collected here must be deleted on request and at the end of the stated
+          retention period.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div>Mombasa Ni Yetu Polls — an unofficial public opinion poll. Not an election result.</div>
+    <div id="footContact"></div>
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var CANDIDATES = [
+    { id:"hassan-omar-sarai",        name:"Hassan Omar Sarai",        party:"UDA",
+      photo:"img/hassan-omar-sarai.jpg",        logo:"img/logo-uda.png",             color:"var(--p-uda)" },
+    { id:"abdulswamad-sharif-nasir", name:"Abdulswamad Sharif Nasir", party:"ODM",
+      photo:"img/abdulswamad-sharif-nasir.jpg", logo:"img/logo-odm.jpg",             color:"var(--p-odm)" },
+    { id:"ali-mbogo-menza",          name:"Ali Mbogo Menza",          party:"Linda Mwananchi Party",
+      photo:"img/ali-mbogo-menza.jpg",          logo:"img/logo-linda-mwananchi.png", color:"var(--p-lmp)" },
+    { id:"suleiman-shabal",          name:"Suleiman Shabal",          party:"TND",
+      photo:"img/suleiman-shabal.jpg",          logo:"img/logo-tnd.jpg",             color:"var(--p-tnd)" },
+    { id:"mohammed-ali-jicho-pevu",  name:"Mohammed Ali Jicho Pevu",  party:"WIPER",
+      photo:"img/mohammed-ali-jicho-pevu.jpg",  logo:"img/logo-wiper.png",           color:"var(--p-wiper)" }
+  ];
+  var AGES = ["Under 18","18–24","25–34","35–44","45–54","55–64","65+"];
+  var GENDERS = ["Male","Female"];
+  var DAY_MS = 24*60*60*1000;
+
+  var S = {
+    db:null, user:null, uid:null, canEdit:false, isOwner:false,
+    cfg:null, cfgLoaded:false,
+    ballots:[], ballotsLoaded:false,
+    voters:[], audit:[],
+    myBallot:null, picked:null, busy:false, showTable:false,
+    lastUpdate:null, stale:false, dead:null
+  };
+
+  var $ = function(id){ return document.getElementById(id); };
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+  function byId(id){ for(var i=0;i<CANDIDATES.length;i++){ if(CANDIDATES[i].id===id) return CANDIDATES[i]; } return null; }
+
+  /* Short non-reversible reference for the audit trail (FNV-1a). */
+  function ref(s){
+    var h=0x811c9dc5;
+    for(var i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=(h*0x01000193)>>>0; }
+    return ("00000000"+h.toString(16)).slice(-8).toUpperCase();
+  }
+
+  /* Largest-remainder rounding to 1dp so displayed shares total 100%. */
+  function shares(counts){
+    var total=0,i; for(i=0;i<counts.length;i++) total+=counts[i];
+    if(!total) return counts.map(function(){ return 0; });
+    var tenths=counts.map(function(c){ return c/total*1000; });
+    var out=tenths.map(Math.floor);
+    var sum=0; for(i=0;i<out.length;i++) sum+=out[i];
+    var order=tenths.map(function(v,ix){ return {ix:ix, frac:v-Math.floor(v)}; })
+                    .sort(function(a,b){ return b.frac-a.frac || a.ix-b.ix; });
+    for(i=0;i<1000-sum;i++) out[order[i%order.length].ix]++;
+    return out.map(function(v){ return v/10; });
+  }
+  function pctTxt(v){ return (Math.round(v*10)/10).toFixed(1)+"%"; }
+
+  /* ---------- poll state ---------- */
+  function phase(){
+    var c=S.cfg;
+    if(!c || !c.status || c.status==="idle") return "idle";
+    if(c.status==="closed") return "closed";
+    if(c.closesAt && Date.now() >= c.closesAt) return "closed";   // optional deadline
+    if(c.opensAt && Date.now() < c.opensAt) return "idle";
+    return "open";
+  }
+  function validBallots(){
+    return S.ballots.filter(function(b){ return !b.invalid; });
+  }
+  function hasVoted(){ return !!S.myBallot; }
+  function maySeeResults(){
+    if(S.isOwner || S.canEdit) return true;
+    if(hasVoted()) return true;
+    return phase()==="closed" && S.cfg && S.cfg.publishAfterClose===true;
+  }
+
+  /* ---------- countdown ---------- */
+  function tick(){
+    var p=phase(), pill=$("statusPill"), txt=$("statusTxt"),
+        val=$("cdVal"), lbl=$("cdLbl");
+    pill.className="pill"+(p==="open"?" live":(p==="closed"?" shut":""));
+    if(p==="idle"){
+      txt.textContent="Not started"; val.textContent="--:--:--"; lbl.textContent="Awaiting start";
+    } else if(p==="closed"){
+      txt.textContent="Closed"; val.textContent="00:00:00"; lbl.textContent="Poll closed";
+    } else {
+      txt.textContent="Live";
+      // With no closing time the poll runs until it is closed by hand; the
+      // clock then counts up from the moment it opened instead of down.
+      var closing=!!S.cfg.closesAt;
+      var ms=closing ? Math.max(0,S.cfg.closesAt-Date.now())
+                     : Math.max(0,Date.now()-(S.cfg.opensAt||Date.now()));
+      var h=Math.floor(ms/3600000), m=Math.floor(ms%3600000/60000), s=Math.floor(ms%60000/1000);
+      val.textContent=(h<10?"0":"")+h+":"+(m<10?"0":"")+m+":"+(s<10?"0":"")+s;
+      lbl.textContent=closing ? "Time remaining" : "Time open";
+      if(closing && ms===0) render();
+    }
+  }
+
+  /* ---------- candidate cards ---------- */
+  function buildCards(){
+    var host=$("candList"); host.innerHTML="";
+    CANDIDATES.forEach(function(c){
+      var b=document.createElement("button");
+      b.type="button"; b.className="cand";
+      b.setAttribute("aria-pressed","false");
+      b.dataset.id=c.id;
+      b.setAttribute("aria-label","Vote for "+c.name+", "+c.party);
+      b.innerHTML =
+        '<span class="cand-rail" style="background:'+c.color+'"></span>'+
+        '<span class="cand-photo"><img src="'+c.photo+'" alt="Portrait of '+esc(c.name)+'" loading="lazy"></span>'+
+        '<span class="cand-info">'+
+          '<span class="cand-name">'+esc(c.name)+'</span>'+
+          '<span class="cand-party"><img src="'+c.logo+'" alt="'+esc(c.party)+' party logo">'+
+            '<span>'+esc(c.party)+'</span></span>'+
+        '</span>'+
+        '<span class="chip">Vote</span>';
+      b.addEventListener("click", function(){
+        S.picked=c.id; $("e-cand").hidden=true; paintCards(); openDialog();
+      });
+      host.appendChild(b);
+    });
+  }
+  function paintCards(){
+    var kids=$("candList").children;
+    for(var i=0;i<kids.length;i++){
+      kids[i].setAttribute("aria-pressed",
+        kids[i].dataset.id===S.picked ? "true" : "false");
+    }
+  }
+
+  /* ---------- results ---------- */
+  function renderResults(){
+    var bs=validBallots();
+    var counts=CANDIDATES.map(function(c){
+      return bs.filter(function(b){ return b.candidateId===c.id; }).length; });
+    var pcts=shares(counts);
+    var rows=CANDIDATES.map(function(c,i){
+      return { c:c, pct:pcts[i], n:counts[i] }; })
+      .sort(function(a,b){ return b.pct-a.pct || b.n-a.n; });
+
+    var lead=$("leaderBox");
+    if(bs.length===0){
+      lead.innerHTML='<div class="leader"><div class="leader-txt">'+
+        '<div class="leader-lbl">No votes yet</div>'+
+        '<div class="leader-party">Standings appear as soon as votes are cast.</div></div></div>';
+    } else {
+      var top=rows[0], tied = rows.length>1 && rows[1].pct===top.pct;
+      lead.innerHTML='<div class="leader" style="--pc:'+top.c.color+'">'+
+        '<img src="'+top.c.photo+'" alt="">'+
+        '<div class="leader-txt"><div class="leader-lbl">'+(tied?"Joint lead":"Currently leading")+'</div>'+
+        '<div class="leader-name">'+esc(top.c.name)+'</div>'+
+        '<div class="leader-party">'+esc(top.c.party)+'</div></div>'+
+        '<div class="leader-pct">'+pctTxt(top.pct)+'</div></div>';
+    }
+
+    $("bars").innerHTML = rows.map(function(r){
+      return '<div class="bar-row" tabindex="0" style="--pc:'+r.c.color+'" aria-label="'+
+             esc(r.c.name)+', '+esc(r.c.party)+', '+pctTxt(r.pct)+'">'+
+        '<span class="bar-rail"></span>'+
+        '<img class="bar-face" src="'+r.c.photo+'" alt="">'+
+        '<div class="bar-mid"><div class="bar-label">'+
+          '<span class="bar-name">'+esc(r.c.name)+'</span>'+
+          '<span class="bar-party">'+esc(r.c.party)+'</span></div>'+
+          '<div class="bar-track"><div class="bar-fill" style="width:'+r.pct+
+            '%"></div></div></div>'+
+        '<div class="bar-pct">'+pctTxt(r.pct)+'</div></div>';
+    }).join("");
+
+    $("tableBody").innerHTML = rows.map(function(r){
+      return '<tr><td>'+esc(r.c.name)+'</td><td>'+esc(r.c.party)+
+             '</td><td class="num">'+pctTxt(r.pct)+'</td></tr>'; }).join("");
+
+    demo("ageBars", AGES, bs.map(function(b){ return b.ageBracket; }));
+    demo("genBars", GENDERS, bs.map(function(b){ return b.gender; }));
+
+    var st=$("stamp");
+    if(S.stale) st.textContent="Live connection interrupted — figures may be out of date.";
+    else if(S.lastUpdate) st.textContent="Last updated "+S.lastUpdate.toLocaleTimeString([], {
+      hour:"2-digit", minute:"2-digit", second:"2-digit" })+" · updates automatically";
+    else st.textContent="";
+  }
+
+  function demo(hostId, keys, values){
+    var counts=keys.map(function(k){
+      return values.filter(function(v){ return v===k; }).length; });
+    var pcts=shares(counts);
+    $(hostId).innerHTML = keys.map(function(k,i){
+      return '<div class="drow"><span class="dl">'+esc(k)+'</span>'+
+             '<span class="dp">'+pctTxt(pcts[i])+'</span>'+
+             '<span class="dtrack"><span class="dfill" style="width:'+pcts[i]+'%"></span></span></div>';
+    }).join("");
+  }
+
+  /* ---------- admin ---------- */
+  function renderAdmin(){
+    if(!(S.isOwner||S.canEdit)){ $("adminPanel").hidden=true; return; }
+    $("adminPanel").hidden=false;
+
+    var bs=S.ballots, valid=validBallots(), p=phase();
+    var byCon={};
+    S.voters.forEach(function(v){ byCon[v.constituency]=(byCon[v.constituency]||0)+1; });
+    var conTxt=Object.keys(byCon).sort().map(function(k){
+      return esc(k)+" <b>"+byCon[k]+"</b>"; }).join(" · ") || "—";
+
+    $("adminStats").innerHTML =
+      "Status <b>"+(p==="open"?"Open":p==="closed"?"Closed":"Not started")+"</b>"+
+      "Total votes <b>"+bs.length+"</b>"+
+      "Counted <b>"+valid.length+"</b>"+
+      "Marked invalid <b>"+(bs.length-valid.length)+"</b>"+
+      (S.cfg&&S.cfg.closesAt ? "Closes <b>"+new Date(S.cfg.closesAt).toLocaleString()+"</b>" : "")+
+      "<span style='flex-basis:100%'>By constituency: "+conTxt+"</span>";
+
+    var ctl=$("adminControls"); ctl.innerHTML="";
+    function mk(label, cls, fn){
+      var b=document.createElement("button"); b.type="button"; b.className="btn "+cls;
+      b.textContent=label; b.addEventListener("click",fn); ctl.appendChild(b); }
+    if(p==="idle") mk("Open poll","btn-primary",function(){ startPoll(); });
+    if(p==="open") mk("Close poll now","btn-danger",function(){ closePoll(); });
+    if(p==="closed") mk("Re-open poll","btn-ghost",function(){ startPoll(); });
+
+    var vmap={}; S.voters.forEach(function(v){ vmap[v.id]=v; });
+    $("adminRows").innerHTML = S.ballots.slice().sort(function(a,b){
+      return (b.createdAt||0)-(a.createdAt||0); }).map(function(b){
+      var v=vmap[b.id]||{}, c=byId(b.candidateId);
+      return '<tr class="'+(b.invalid?"tbl-invalid":"")+'">'+
+        '<td>'+(b.createdAt?new Date(b.createdAt).toLocaleString():"—")+'</td>'+
+        '<td>'+esc(v.fullName||"—")+'</td>'+
+        '<td>'+esc(v.constituency||"—")+'</td>'+
+        '<td>'+esc(b.ageBracket||"—")+'</td>'+
+        '<td>'+esc(b.gender==="Other"&&v.genderOther?("Other: "+v.genderOther):(b.gender||"—"))+'</td>'+
+        '<td>'+esc(c?c.name:b.candidateId)+'</td>'+
+        '<td>'+esc(ref(b.id))+'</td>'+
+        '<td>'+(b.invalid?"Invalid":"Counted")+'</td>'+
+        '<td><button type="button" class="btn btn-ghost" data-flag="'+esc(b.id)+'">'+
+          (b.invalid?"Restore":"Mark invalid")+'</button></td></tr>';
+    }).join("") || '<tr><td colspan="9">No submissions yet.</td></tr>';
+
+    Array.prototype.forEach.call($("adminRows").querySelectorAll("[data-flag]"), function(btn){
+      btn.addEventListener("click", function(){ toggleInvalid(btn.getAttribute("data-flag")); });
+    });
+
+    $("auditRows").innerHTML = S.audit.slice().sort(function(a,b){
+      return (b.at||0)-(a.at||0); }).slice(0,40).map(function(a){
+      return '<tr><td>'+(a.at?new Date(a.at).toLocaleString():"—")+'</td>'+
+             '<td>'+esc(a.action)+'</td><td>'+esc(a.detail||"")+'</td></tr>';
+    }).join("") || '<tr><td colspan="3">No administrative actions recorded.</td></tr>';
+  }
+
+  function say(m){ $("adminMsg").textContent=m;
+    setTimeout(function(){ if($("adminMsg").textContent===m) $("adminMsg").textContent=""; },4200); }
+
+  function logAudit(action, detail){
+    if(!S.db) return Promise.resolve();
+    return S.db.collection("audit").add({
+      at:Date.now(), action:action, detail:detail||"", byRef:S.uid?ref(S.uid):"—"
+    }).catch(function(){});
+  }
+
+  function writeCfg(patch, note){
+    if(!S.db) return;
+    var base = S.cfg || {};
+    var next = {
+      status:        patch.status        !== undefined ? patch.status        : (base.status||"idle"),
+      opensAt:       patch.opensAt       !== undefined ? patch.opensAt       : (base.opensAt||null),
+      closesAt:      patch.closesAt      !== undefined ? patch.closesAt      : (base.closesAt||null),
+      publishAfterClose: patch.publishAfterClose !== undefined ? patch.publishAfterClose
+                                                              : (base.publishAfterClose===true),
+      contactEmail:  patch.contactEmail  !== undefined ? patch.contactEmail  : (base.contactEmail||""),
+      updatedAt: Date.now()
+    };
+    S.db.doc("poll/config").set(next).then(function(){
+      if(note){ logAudit(note.action, note.detail); say(note.say||"Saved."); }
+    }).catch(function(e){ say("Could not save: "+(e&&e.code?e.code:"error")); });
+  }
+  function startPoll(){
+    writeCfg({ status:"open", opensAt:Date.now(), closesAt:null },
+      { action:"Poll opened", detail:"Voting opened with no closing time",
+        say:"Poll is now live." });
+  }
+  function closePoll(){
+    writeCfg({ status:"closed", closesAt:Date.now() },
+      { action:"Poll closed", detail:"Closed manually", say:"Poll closed." });
+  }
+  function extend(hours){
+    var base=Math.max(Date.now(), (S.cfg&&S.cfg.closesAt)||Date.now());
+    writeCfg({ status:"open", closesAt:base+hours*3600000 },
+      { action:"Poll extended", detail:"+"+hours+" hours", say:"Extended by "+hours+" hours." });
+  }
+  function toggleInvalid(id){
+    var b=null; S.ballots.forEach(function(x){ if(x.id===id) b=x; });
+    if(!b||!S.db) return;
+    S.db.doc("ballots/"+id).set({
+      candidateId:b.candidateId, ageBracket:b.ageBracket, gender:b.gender,
+      createdAt:b.createdAt, invalid: !b.invalid
+    }).then(function(){
+      logAudit(b.invalid?"Vote restored":"Vote marked invalid","Voter ref "+ref(id));
+      say(b.invalid?"Vote restored to the tally.":"Vote excluded from the tally.");
+    }).catch(function(e){ say("Could not update: "+(e&&e.code?e.code:"error")); });
+  }
+
+  function csvCell(v){
+    var s=String(v==null?"":v);
+    return /[",\n\r]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s;
+  }
+  function exportCsv(){
+    var vmap={}; S.voters.forEach(function(v){ vmap[v.id]=v; });
+    var head=["Submitted At","Full Name","Age Bracket","Constituency (hidden publicly)",
+              "Gender","Gender (self-described)","Candidate","Party","Status","Voter Ref"];
+    var lines=[head.map(csvCell).join(",")];
+    S.ballots.slice().sort(function(a,b){ return (a.createdAt||0)-(b.createdAt||0); })
+      .forEach(function(b){
+        var v=vmap[b.id]||{}, c=byId(b.candidateId);
+        lines.push([
+          b.createdAt?new Date(b.createdAt).toISOString():"", v.fullName||"", b.ageBracket||"",
+          v.constituency||"", b.gender||"", v.genderOther||"",
+          c?c.name:b.candidateId, c?c.party:"", b.invalid?"Invalid":"Counted", ref(b.id)
+        ].map(csvCell).join(","));
+      });
+    var csv="﻿"+lines.join("\r\n");
+    claude.use("downloads").then(function(d){
+      if(!d){ say("Downloads are unavailable in this view."); return; }
+      return d.save({ filename:"mombasa-ni-yetu-polls-submissions.csv", data:csv })
+        .then(function(){ logAudit("CSV exported","" + S.ballots.length + " submissions");
+                          say("Export delivered."); });
+    }).catch(function(e){
+      var c=e&&e.code;
+      say(c==="declined" ? "Export cancelled." : "Export failed"+(c?" ("+c+")":"")+".");
+    });
+  }
+
+  /* ---------- voting ---------- */
+  function validate(){
+    var ok=true;
+    function mark(fid, eid, bad){
+      $(fid).classList.toggle("bad", bad); $(eid).hidden=!bad; if(bad) ok=false; }
+    mark("f-name","e-name", $("fullName").value.trim().length<2);
+    mark("f-age","e-age", !$("ageBracket").value);
+    mark("f-con","e-con", !$("constituency").value);
+    mark("f-gen","e-gen", !$("gender").value);
+    if(!S.picked){ $("e-cand").hidden=false; ok=false; } else { $("e-cand").hidden=true; }
+    return ok;
+  }
+
+  function cast(){
+    if(S.busy) return;
+    if(phase()!=="open"){ render(); return; }
+    if(!validate()){
+      var bad=document.querySelector(".field.bad, .err:not([hidden])");
+      if(bad) bad.scrollIntoView({behavior:"smooth", block:"center"});
+      return;
+    }
+    if(!S.db || !S.uid){ noticeOnly("signin"); return; }
+    S.busy=true; $("castBtn").disabled=true; $("castBtn").textContent="Recording…";
+
+    var now=Date.now();
+    var ballot={ candidateId:S.picked, ageBracket:$("ageBracket").value,
+                 gender:$("gender").value, createdAt:now, invalid:false };
+    var voter={ fullName:$("fullName").value.trim(),
+                constituency:$("constituency").value,
+                genderOther:"",
+                createdAt:now };
+
+    S.db.doc("voters/"+S.uid).set(voter)
+      .then(function(){ return S.db.doc("ballots/"+S.uid).set(ballot); })
+      .then(function(){
+        S.myBallot=Object.assign({id:S.uid}, ballot);
+        S.busy=false; closeDialog(); render();
+        var rv=$("resultsView"); if(rv) rv.scrollIntoView({behavior:"smooth", block:"start"});
+      })
+      .catch(function(e){
+        S.busy=false; $("castBtn").disabled=false; $("castBtn").textContent="Submit Vote";
+        var c=e&&e.code;
+        $("castNote").textContent = c==="invalid_argument"
+          ? "This account is not allowed to vote on this poll. Ask the poll owner for access."
+          : "Could not record your vote"+(c?" ("+c+")":"")+". Please try again.";
+      });
+  }
+
+  /* ---------- details dialog ---------- */
+  function openDialog(){
+    if(!S.picked){
+      $("e-cand").hidden=false;
+      $("candList").scrollIntoView({behavior:"smooth", block:"center"});
+      return;
+    }
+    $("e-cand").hidden=true;
+    var c=byId(S.picked);
+    $("dlgPick").innerHTML = c ? (
+      '<img src="'+c.photo+'" alt="">'+
+      '<div><div class="dp-lbl">Your choice</div>'+
+      '<div class="dp-name">'+esc(c.name)+'</div>'+
+      '<div class="dp-party">'+esc(c.party)+'</div></div>') : "";
+    var d=$("detailsDlg");
+    if(typeof d.showModal==="function") d.showModal(); else d.setAttribute("open","");
+    setTimeout(function(){ var n=$("fullName"); if(n) n.focus(); }, 40);
+  }
+  function closeDialog(){
+    var d=$("detailsDlg");
+    if(!d) return;
+    if(typeof d.close==="function"){ if(d.open) d.close(); }
+    else d.removeAttribute("open");
+  }
+
+  /* ---------- views ---------- */
+  function noticeOnly(kind){
+    closeDialog();
+    $("voteView").hidden=true; $("resultsView").hidden=true; $("bootState").hidden=true;
+    var n=$("noticeBox"); n.hidden=false;
+    var html={
+      signin:'<h2>Sign in to vote</h2><p>This poll records one vote per person, so voting '+
+             'requires a signed-in Claude account that has been given access to this poll. '+
+             'You can read the page, but the ballot is unavailable.</p>',
+      idle:  '<h2>Voting has not opened yet</h2><p>The poll has not been opened by the '+
+             'administrator. Check back shortly.</p>',
+      closed:'<h2>The poll has closed</h2><p>Voting for Mombasa Ni Yetu Polls is now closed and no '+
+             'further votes can be recorded.</p>',
+      closedNoVote:'<h2>The poll has closed</h2><p>Voting is closed. Results were shown only to '+
+             'people who cast a vote while the poll was open.</p>',
+      offline:'<h2>Live results unavailable</h2><p>This view cannot reach the results service, so '+
+             'voting is disabled. Try reloading, or open the poll from its own page.</p>'
+    }[kind];
+    n.className="notice"; n.innerHTML=html;
+  }
+
+  function render(){
+    $("bootState").hidden=true;
+    var p=phase();
+
+    if(!S.db){
+      noticeOnly(S.dead==="nodb" ? "offline" : "signin");
+      renderAdmin(); return;
+    }
+    if(maySeeResults()){
+      closeDialog();
+      $("noticeBox").hidden=true; $("voteView").hidden=true; $("resultsView").hidden=false;
+      $("confirmBox").hidden = !hasVoted();
+      renderResults();
+    } else if(p==="open"){
+      $("noticeBox").hidden=true; $("resultsView").hidden=true; $("voteView").hidden=false;
+      paintCards();
+    } else if(p==="closed"){
+      noticeOnly("closedNoVote");
+    } else {
+      noticeOnly("idle");
+    }
+    renderAdmin();
+    var fc=$("footContact");
+    fc.textContent = (S.cfg && S.cfg.contactEmail)
+      ? "Data deletion or correction requests: "+S.cfg.contactEmail
+      : "";
+  }
+
+  /* ---------- boot ---------- */
+  buildCards();
+  $("castBtn").addEventListener("click", cast);
+  $("dlgClose").addEventListener("click", closeDialog);
+  $("detailsDlg").addEventListener("click", function(e){
+    if(e.target===this) closeDialog();   // click outside the card closes it
+  });
+  $("tblToggle").addEventListener("click", function(){
+    S.showTable=!S.showTable;
+    $("tableView").hidden=!S.showTable; $("bars").hidden=S.showTable;
+    this.setAttribute("aria-expanded", S.showTable?"true":"false");
+    this.textContent=S.showTable?"View as chart":"View as table";
+  });
+  $("csvBtn").addEventListener("click", exportCsv);
+  $("saveCfg").addEventListener("click", function(){
+    writeCfg({ publishAfterClose:$("pubAfter").checked,
+               contactAddr:undefined, contactEmail:$("contactAddr").value.trim() },
+      { action:"Settings updated", detail:"Publication and contact settings", say:"Settings saved." });
+  });
+  setInterval(tick, 1000); tick();
+
+  var loadTimer=setTimeout(function(){
+    if(!S.cfgLoaded || !S.ballotsLoaded){ S.stale=true; render(); }
+  }, 10000);
+
+  Promise.all([claude.use("db"), claude.use("user")]).then(function(r){
+    S.db=r[0]; S.user=r[1];
+    if(!S.db){ S.dead="nodb"; clearTimeout(loadTimer); render(); return; }
+
+    var ready = S.user ? Promise.all([
+        S.user.id().catch(function(){ return null; }),
+        Promise.resolve(S.user.canEdit()).catch(function(){ return false; }),
+        Promise.resolve(S.user.isOwner()).catch(function(){ return false; })
+      ]) : Promise.resolve([null,false,false]);
+
+    return ready.then(function(u){
+      S.uid=u[0]; S.canEdit=!!u[1]; S.isOwner=!!u[2];
+
+      S.db.doc("poll/config").onSnapshot(function(snap){
+        S.cfg = snap.exists ? snap.data() : null;
+        S.cfgLoaded=true;
+        if(!snap.metadata.fromCache){ S.stale=false; clearTimeout(loadTimer); }
+        if(S.cfg){
+          if(document.activeElement!==$("pubAfter")) $("pubAfter").checked=S.cfg.publishAfterClose===true;
+          if(document.activeElement!==$("contactAddr")) $("contactAddr").value=S.cfg.contactEmail||"";
+        }
+        tick(); render();
+      }, function(){ S.stale=true; S.cfgLoaded=true; render(); });
+
+      S.db.collection("ballots").onSnapshot(function(snap){
+        S.ballots = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); });
+        S.myBallot = S.uid ? (S.ballots.filter(function(b){ return b.id===S.uid; })[0]||null) : null;
+        S.ballotsLoaded=true; S.lastUpdate=new Date();
+        if(!snap.metadata.fromCache){ S.stale=false; clearTimeout(loadTimer); }
+        render();
+      }, function(){ S.stale=true; S.ballotsLoaded=true; render(); });
+
+      if(S.canEdit || S.isOwner){
+        S.db.collection("voters").onSnapshot(function(snap){
+          S.voters = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); });
+          renderAdmin();
+        }, function(){});
+        S.db.collection("audit").onSnapshot(function(snap){
+          S.audit = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); });
+          renderAdmin();
+        }, function(){});
+      }
+      render();
+    });
+  }).catch(function(){
+    S.dead="nodb"; clearTimeout(loadTimer); render();
+  });
+})();
+</script>

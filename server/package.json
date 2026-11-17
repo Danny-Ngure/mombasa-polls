@@ -1,0 +1,23 @@
+{
+  "name": "mombasa-ni-yetu-polls",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Mombasa Ni Yetu Polls - a 24-hour public opinion poll portal with live percentage results.",
+  "type": "commonjs",
+  "main": "src/index.js",
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "build": "node scripts/build-public.js",
+    "keys": "node scripts/generate-keys.js",
+    "purge": "node scripts/purge.js"
+  },
+  "dependencies": {
+    "express": "4.21.2",
+    "pg": "8.13.1",
+    "socket.io": "4.8.1"
+  }
+}
