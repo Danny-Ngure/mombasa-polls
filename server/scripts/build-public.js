@@ -20,6 +20,15 @@ const ROOT = path.resolve(__dirname, '..', '..');
 const SRC = path.join(ROOT, 'mombasa-ni-yetu-polls.html');
 const OUT = path.resolve(__dirname, '..', 'public');
 
+// On a host that only uploads the server/ directory (Vercel with Root
+// Directory = server), the source page is not present. The generated files are
+// committed, so there is nothing to do - skip rather than fail the deploy.
+if (!fs.existsSync(SRC)) {
+  console.log('build-public: source page not present here; using the committed '
+            + 'public/index.html and public/styles.css as-is.');
+  process.exit(0);
+}
+
 const src = fs.readFileSync(SRC, 'utf8');
 
 /* ---- stylesheet ---- */
