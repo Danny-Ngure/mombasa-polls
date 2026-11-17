@@ -5,7 +5,7 @@
 #   3. Render creates the database and web service and generates the secrets.
 #   4. Set ADMIN_PASSWORD_HASH (see README) and deploy.
 #
-# The poll stays closed until you press "Start 24-hour poll" in /admin.
+# The poll stays closed until you press "Open poll" in /admin.
 
 databases:
   - name: mombasa-polls-db
