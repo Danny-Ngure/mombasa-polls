@@ -217,7 +217,10 @@ function pgStore() {
     connectionString: config.databaseUrl,
     ssl: /localhost|127\.0\.0\.1/.test(config.databaseUrl)
       ? false : { rejectUnauthorized: false },
-    max: 10,
+    // One connection per serverless container; a pool there just exhausts the
+    // database's connection limit as containers multiply.
+    max: config.serverless ? 1 : 10,
+    idleTimeoutMillis: config.serverless ? 5000 : 30000,
   });
   const q = (text, params) => pool.query(text, params);
   const dup = (e) => e && e.code === '23505';
@@ -325,6 +328,14 @@ function pgStore() {
 }
 
 async function openStore() {
+  if (config.serverless && !config.databaseUrl) {
+    throw new Error(
+      'A Postgres connection string is required on serverless hosts (Vercel): '
+      + 'their filesystem is read-only and resets between requests, so SQLite '
+      + 'would lose every vote. Add a Postgres store in your host dashboard, or '
+      + 'set DATABASE_URL.'
+    );
+  }
   const store = config.databaseUrl ? pgStore() : sqliteStore();
   if (store.init) await store.init();
   return store;

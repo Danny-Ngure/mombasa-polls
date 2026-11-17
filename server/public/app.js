@@ -338,8 +338,25 @@
   }
 
   function loadResults() {
-    return api('/api/results').then(function (r) { S.results = r; render(); })
-      .catch(function () { /* not entitled yet */ });
+    return api('/api/results').then(function (r) {
+      S.results = r; S.stale = false; render();
+    }).catch(function () { /* not entitled to see results yet */ });
+  }
+
+  /* Polling fallback for hosts without websockets. Only runs while the tab is
+     visible, so a forgotten tab does not keep hitting the server. */
+  function startPolling() {
+    var every = 4000;
+    setInterval(function () {
+      if (document.hidden) return;
+      api('/api/config').then(function (cfg) {
+        var was = S.poll.phase;
+        S.poll = cfg.poll;
+        if (cfg.voted && !S.voted) S.voted = true;
+        if (was !== S.poll.phase) { tick(); render(); }
+      }).catch(function () {});
+      if (S.voted || (S.poll.phase === 'closed' && S.poll.publishAfterClose)) loadResults();
+    }, every);
   }
 
   /* --------------------------------- boot --------------------------------- */
@@ -362,13 +379,19 @@
     buildForm(cfg); buildCards(); tick(); render();
     if (S.voted) loadResults();
 
-    var socket = io({ withCredentials: true });
-    socket.on('connect', function () { S.stale = false; });
-    socket.on('disconnect', function () { S.stale = true; renderResults(); });
-    socket.on('poll', function (p) {
-      S.poll = Object.assign({}, S.poll, p); tick(); render();
-    });
-    socket.on('results', function (r) { S.results = r; render(); });
+    // Websockets where the host supports them (local, Render, Docker);
+    // short polling where it cannot hold a connection open (Vercel).
+    if (typeof io === 'function') {
+      var socket = io({ withCredentials: true });
+      socket.on('connect', function () { S.stale = false; });
+      socket.on('disconnect', function () { S.stale = true; renderResults(); });
+      socket.on('poll', function (p) {
+        S.poll = Object.assign({}, S.poll, p); tick(); render();
+      });
+      socket.on('results', function (r) { S.results = r; render(); });
+    } else {
+      startPolling();
+    }
   }).catch(function () {
     noticeOnly('offline');
   });

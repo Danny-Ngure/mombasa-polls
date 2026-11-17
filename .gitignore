@@ -9,3 +9,6 @@ server/data/
 Thumbs.db
 
 ADMIN-CREDENTIALS.txt
+
+server/.env.live
+server/data-test/

@@ -44,9 +44,17 @@ const config = {
   adminPasswordHash: process.env.ADMIN_PASSWORD_HASH || '',
   adminPasswordPlain: isProd ? '' : (process.env.ADMIN_PASSWORD || 'mombasa-dev'),
 
-  // Storage
-  databaseUrl: process.env.DATABASE_URL || '',
+  // Storage. Managed Postgres add-ons inject different variable names:
+  // Render uses DATABASE_URL, Vercel/Neon and Supabase use POSTGRES_URL.
+  databaseUrl: process.env.DATABASE_URL
+    || process.env.POSTGRES_URL
+    || process.env.POSTGRES_PRISMA_URL
+    || process.env.POSTGRES_URL_NON_POOLING
+    || '',
   sqlitePath: process.env.SQLITE_PATH || './data/polls.db',
+
+  // True on serverless hosts, where each request may run in its own container.
+  serverless: !!(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME),
 
   // Poll behaviour
   pollHours: int(process.env.POLL_HOURS, 24),

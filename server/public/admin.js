@@ -141,7 +141,14 @@
   // Already signed in? Go straight to the dashboard.
   load().catch(function () { $('loginPanel').hidden = false; });
 
-  var socket = io({ withCredentials: true });
-  socket.on('admin:dirty', function () { load().catch(function () {}); });
-  socket.on('poll', function () { load().catch(function () {}); });
+  if (typeof io === 'function') {
+    var socket = io({ withCredentials: true });
+    socket.on('admin:dirty', function () { load().catch(function () {}); });
+    socket.on('poll', function () { load().catch(function () {}); });
+  } else {
+    // Serverless host: no websockets, so refresh on a timer instead.
+    setInterval(function () {
+      if (!document.hidden && state) load().catch(function () {});
+    }, 6000);
+  }
 })();

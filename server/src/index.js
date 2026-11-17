@@ -21,8 +21,18 @@ const ADMIN_COOKIE = 'mnyp_admin';
 const OTP_COOKIE = 'mnyp_otp';
 const DAY_MS = 24 * 60 * 60 * 1000;
 
-(async function main() {
+/**
+ * Builds the app. `realtime: false` (serverless hosts such as Vercel, which
+ * cannot hold a websocket open) skips Socket.IO and the background timers;
+ * the browser then polls /api/results instead. Everything else is identical.
+ */
+async function build(opts) {
+  const realtime = !(opts && opts.realtime === false);
   const store = await store0.openStore();
+
+  // Replaced with the real Socket.IO server below when realtime is on. Routes
+  // close over this variable, so reassigning it later is enough.
+  let io = { to: () => ({ emit() {} }), emit() {}, on() {} };
 
   /* ---------------------------------------------------------- helpers */
 
@@ -103,13 +113,15 @@ const DAY_MS = 24 * 60 * 60 * 1000;
     rateLimitHit(key, windowMs);
     return true;
   }
-  setInterval(() => {
-    const now = Date.now();
-    for (const [k, v] of buckets) {
-      const keep = v.filter((t) => now - t < 60 * 60 * 1000);
-      if (keep.length) buckets.set(k, keep); else buckets.delete(k);
-    }
-  }, 10 * 60 * 1000).unref();
+  if (realtime) {
+    setInterval(() => {
+      const now = Date.now();
+      for (const [k, v] of buckets) {
+        const keep = v.filter((t) => now - t < 60 * 60 * 1000);
+        if (keep.length) buckets.set(k, keep); else buckets.delete(k);
+      }
+    }, 10 * 60 * 1000).unref();
+  }
 
   /* ---------------------------------------------------------- captcha */
 
@@ -498,8 +510,10 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 
   /* ------------------------------------------------------------ server */
 
-  const server = http.createServer(app);
-  const io = new Server(server, { cors: { origin: false } });
+  let server = null;
+  if (realtime) {
+  server = http.createServer(app);
+  io = new Server(server, { cors: { origin: false } });
 
   io.on('connection', async (socket) => {
     const token = voterTokenFrom(socket.handshake);
@@ -532,6 +546,7 @@ const DAY_MS = 24 * 60 * 60 * 1000;
                         publishAfterClose: saved.publishAfterClose });
     }
   }, 15 * 1000).unref();
+  }
 
   if (config.autoStart) {
     const cfg = await readConfig();
@@ -541,13 +556,22 @@ const DAY_MS = 24 * 60 * 60 * 1000;
     }
   }
 
-  server.listen(config.port, () => {
-    console.log(`Mombasa Ni Yetu Polls listening on :${config.port} (${store.kind})`);
-    if (!config.isProd) {
-      console.log(`Admin sign-in: ${config.adminUser} / ${config.adminPasswordPlain}`);
-    }
+  return { app, server, store };
+}
+
+module.exports = { build };
+
+/* Started directly (local, Render, Docker): listen with realtime enabled. */
+if (require.main === module) {
+  build({ realtime: true }).then(({ server, store }) => {
+    server.listen(config.port, () => {
+      console.log(`Mombasa Ni Yetu Polls listening on :${config.port} (${store.kind})`);
+      if (!config.isProd) {
+        console.log(`Admin sign-in: ${config.adminUser} / ${config.adminPasswordPlain}`);
+      }
+    });
+  }).catch((e) => {
+    console.error('Startup failed:', e.message);
+    process.exit(1);
   });
-})().catch((e) => {
-  console.error('Startup failed:', e.message);
-  process.exit(1);
-});
+}
