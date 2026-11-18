@@ -18,14 +18,12 @@ const isProd = process.env.NODE_ENV === 'production';
  * In production every secret must come from the environment - the process
  * refuses to start otherwise, so a live poll can never run on a throwaway key.
  */
+const missing = [];
+
 function secret(name, bytes) {
   const v = process.env[name];
   if (v && v.length >= 32) return v;
-  if (isProd) {
-    throw new Error(
-      `${name} is required in production. Generate one with: npm run keys`
-    );
-  }
+  if (isProd) { missing.push(name); return ''; }
   return crypto.randomBytes(bytes).toString('hex');
 }
 
@@ -87,9 +85,19 @@ const config = {
   hcaptchaSiteKey: process.env.HCAPTCHA_SITE_KEY || '',
 };
 
-if (isProd && !config.adminPasswordHash) {
+if (isProd && !config.adminPasswordHash) missing.push('ADMIN_PASSWORD_HASH');
+if (isProd && config.serverless && !config.databaseUrl) {
+  missing.push('DATABASE_URL (add a Postgres store to the project)');
+}
+
+/* One clear message naming everything that is absent, rather than failing on
+   the first one and leaving the operator to discover the rest one deploy at a
+   time. */
+if (missing.length) {
   throw new Error(
-    'ADMIN_PASSWORD_HASH is required in production. Generate one with: npm run keys'
+    'Missing required environment variable(s): ' + missing.join(', ')
+    + '. Add them in your hosting dashboard and redeploy. The values were '
+    + 'written to ADMIN-CREDENTIALS.txt; "npm run keys" regenerates them.'
   );
 }
 

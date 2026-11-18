@@ -12,22 +12,26 @@
  * setup are not repeated on every request.
  */
 
-const { build } = require('../src/index');
-
 let building;
 
 module.exports = async function handler(req, res) {
   try {
-    building = building || build({ realtime: false });
+    // Required lazily: config throws when a secret is absent, and at module
+    // scope that crashes the function before this handler can explain why.
+    if (!building) {
+      const { build } = require('../src/index');
+      building = build({ realtime: false });
+    }
     const { app } = await building;
     return app(req, res);
   } catch (e) {
     building = undefined;           // let the next request retry a cold build
-    console.error('Serverless build failed:', e);
-    res.statusCode = 500;
-    res.setHeader('Content-Type', 'application/json');
+    console.error('Startup failed:', e && e.message);
+    res.statusCode = 503;
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
     return res.end(JSON.stringify({
-      error: 'The poll service could not start. Check DATABASE_URL and the secrets.',
-    }));
+      error: 'The poll service is not configured yet.',
+      detail: (e && e.message) || String(e),
+    }, null, 2));
   }
 };
