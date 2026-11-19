@@ -18,7 +18,11 @@ services:
     runtime: node
     rootDir: server
     plan: free
-    region: frankfurt
+    # No region is pinned here on purpose. Render's internal database hostname
+    # (dpg-...-a) only resolves inside the database's own region, so a service
+    # pinned to a different region than the database fails with ENOTFOUND.
+    # Leaving both unset keeps them in the same default region. To move the
+    # poll closer to Mombasa, set the SAME region on the database and here.
     buildCommand: npm ci --omit=dev
     startCommand: npm start
     healthCheckPath: /healthz

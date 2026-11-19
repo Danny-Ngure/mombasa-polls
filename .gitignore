@@ -12,3 +12,7 @@ ADMIN-CREDENTIALS.txt
 
 server/.env.live
 server/data-test/
+
+vercel-import.env
+
+PASTE-THIS-INTO-RENDER.txt
