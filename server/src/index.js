@@ -511,7 +511,18 @@ async function build(opts) {
     res.json({ ok: true, purged: n });
   });
 
-  app.get('/healthz', (req, res) => res.json({ ok: true, storage: store.kind }));
+  /* Health plus enough configuration shape to diagnose a bad deploy without
+     revealing anything secret: whether the admin hash is present and
+     well-formed, never the hash itself. */
+  app.get('/healthz', (req, res) => res.json({
+    ok: true,
+    storage: store.kind,
+    adminHash: {
+      present: !!config.adminPasswordHash,
+      length: config.adminPasswordHash.length,
+      wellFormed: /^scrypt\$[0-9a-f]{32}\$[0-9a-f]{128}$/.test(config.adminPasswordHash),
+    },
+  }));
 
   /* ------------------------------------------------------------ server */
 
