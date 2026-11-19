@@ -23,7 +23,14 @@ const missing = [];
 function secret(name, bytes) {
   const v = process.env[name];
   if (v && v.length >= 32) return v;
-  if (isProd) { missing.push(name); return ''; }
+  if (isProd) {
+    // Distinguish "not set at all" from "set but too short", because a
+    // half-pasted value otherwise looks identical to a missing one.
+    missing.push(v
+      ? `${name} (set, but only ${v.length} characters - needs 32+, so it looks truncated)`
+      : `${name} (not set)`);
+    return '';
+  }
   return crypto.randomBytes(bytes).toString('hex');
 }
 
