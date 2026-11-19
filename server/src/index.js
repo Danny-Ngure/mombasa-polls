@@ -186,6 +186,11 @@ async function build(opts) {
     index: 'index.html',
   }));
 
+  // /admin is the address people are given; serve the page there as well as at
+  // its filename, so a typed URL without the extension does not 404.
+  app.get(['/admin', '/admin/'], (req, res) =>
+    res.sendFile(path.join(__dirname, '..', 'public', 'admin.html')));
+
   /* -------------------------------------------------------- public API */
 
   app.get('/api/config', async (req, res) => {
