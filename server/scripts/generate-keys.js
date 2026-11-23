@@ -6,10 +6,12 @@
 
 const crypto = require('node:crypto');
 
+/* Compact encoding: base64url(salt16 || key64). No `$` for a shell to expand,
+   and short enough to paste into a dashboard without half-selecting it. */
 function hashPassword(password) {
   const salt = crypto.randomBytes(16);
   const key = crypto.scryptSync(String(password), salt, 64);
-  return `scrypt$${salt.toString('hex')}$${key.toString('hex')}`;
+  return Buffer.concat([salt, key]).toString('base64url');
 }
 
 const password = process.argv[2];

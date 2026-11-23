@@ -13,7 +13,7 @@ const C = require('./candidates');
 const { publicResults, adminTotals } = require('./tally');
 const {
   encrypt, decrypt, hash, shortRef, randomToken,
-  sign, unsign, parseCookies, verifyPassword, safeEqual,
+  sign, unsign, parseCookies, verifyPassword, isValidStoredHash, safeEqual,
 } = require('./crypto');
 
 const VOTER_COOKIE = 'mnyp_voter';
@@ -520,7 +520,7 @@ async function build(opts) {
     adminHash: {
       present: !!config.adminPasswordHash,
       length: config.adminPasswordHash.length,
-      wellFormed: /^scrypt\$[0-9a-f]{32}\$[0-9a-f]{128}$/.test(config.adminPasswordHash),
+      wellFormed: isValidStoredHash(config.adminPasswordHash),
     },
   }));
 

@@ -84,20 +84,51 @@ function parseCookies(header) {
 
 /* ---------- admin password ---------- */
 
-/** scrypt hash, stored as "scrypt$<saltHex>$<keyHex>". */
+/**
+ * Two accepted encodings of the same scrypt hash:
+ *   - "scrypt$<saltHex>$<keyHex>"  (168 chars) - traditional, readable
+ *   - base64url(salt16 || key64)   (108 chars) - COMPACT, preferred
+ *
+ * The compact form exists because the traditional one contains `$`, which
+ * shells expand when an env file is sourced, and its length invites a
+ * half-selected paste into a hosting dashboard. The compact form is shorter
+ * and uses only [A-Za-z0-9_-], so it survives every paste path intact.
+ */
+const SCRYPT_RE = /^scrypt\$([0-9a-f]{32})\$([0-9a-f]{128})$/;
+const COMPACT_RE = /^[A-Za-z0-9_-]{105,112}$/;
+
+/** Accept either encoding; return {salt, key} or null. */
+function parseStoredHash(stored) {
+  const s = String(stored || '').trim();
+  const m = SCRYPT_RE.exec(s);
+  if (m) return { salt: Buffer.from(m[1], 'hex'), key: Buffer.from(m[2], 'hex') };
+  if (COMPACT_RE.test(s)) {
+    try {
+      const raw = Buffer.from(s, 'base64url');
+      if (raw.length === 80) {
+        return { salt: raw.subarray(0, 16), key: raw.subarray(16) };
+      }
+    } catch { /* fall through */ }
+  }
+  return null;
+}
+
+/** True when a stored value is a usable hash in either encoding. */
+const isValidStoredHash = (stored) => parseStoredHash(stored) !== null;
+
+/** Produce the compact form. */
 function hashPassword(password) {
   const salt = crypto.randomBytes(16);
   const key = crypto.scryptSync(String(password), salt, 64);
-  return `scrypt$${salt.toString('hex')}$${key.toString('hex')}`;
+  return Buffer.concat([salt, key]).toString('base64url');
 }
 
 function verifyPassword(password, stored) {
   try {
-    const [scheme, saltHex, keyHex] = String(stored).split('$');
-    if (scheme !== 'scrypt' || !saltHex || !keyHex) return false;
-    const key = crypto.scryptSync(String(password), Buffer.from(saltHex, 'hex'), 64);
-    const want = Buffer.from(keyHex, 'hex');
-    return key.length === want.length && crypto.timingSafeEqual(key, want);
+    const parsed = parseStoredHash(stored);
+    if (!parsed) return false;
+    const key = crypto.scryptSync(String(password), parsed.salt, 64);
+    return key.length === parsed.key.length && crypto.timingSafeEqual(key, parsed.key);
   } catch {
     return false;
   }
@@ -114,5 +145,5 @@ function safeEqual(a, b) {
 module.exports = {
   encrypt, decrypt, hash, shortRef, randomToken,
   sign, unsign, parseCookies,
-  hashPassword, verifyPassword, safeEqual,
+  hashPassword, verifyPassword, isValidStoredHash, safeEqual,
 };
