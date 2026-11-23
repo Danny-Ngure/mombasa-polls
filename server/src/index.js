@@ -48,6 +48,7 @@ async function build(opts) {
   }
 
   function phaseOf(c) {
+    if (config.forceClosed) return 'closed';        // blueprint kill switch
     if (!c || !c.status || c.status === 'idle') return 'idle';
     if (c.status === 'closed') return 'closed';
     if (c.closesAt && Date.now() >= c.closesAt) return 'closed';  // optional deadline
@@ -528,6 +529,7 @@ async function build(opts) {
     // Which credential the login route will actually use.
     adminAuth: isValidStoredHash(config.adminPasswordHash) ? 'hash'
       : (config.adminPasswordPlain ? 'password' : 'NONE - cannot sign in'),
+    forceClosed: config.forceClosed,
   }));
 
   /* ------------------------------------------------------------ server */

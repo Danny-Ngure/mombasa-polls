@@ -69,6 +69,10 @@ const config = {
 
   // Poll behaviour
   pollHours: int(process.env.POLL_HOURS, 24),
+  // Blueprint-level kill switch. Overrides the stored poll state and closes
+  // voting regardless of what the admin panel says - a second way to end the
+  // poll that needs only dashboard (or blueprint) access, not the password.
+  forceClosed: bool(process.env.POLL_FORCE_CLOSED, false),
   retentionDays: int(process.env.RETENTION_DAYS, 30),
   autoStart: bool(process.env.AUTO_START_POLL, false),
 

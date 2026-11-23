@@ -56,6 +56,10 @@ services:
       # unopened poll, so the poll can go live without the admin panel.
       - key: AUTO_START_POLL
         value: "true"
+      # Kill switch: set to "true" to close voting regardless of the admin
+      # panel. A second way to end the poll if the password is unavailable.
+      - key: POLL_FORCE_CLOSED
+        value: "false"
       - key: TRUST_PROXY
         value: "1"
       - key: OTP_ENABLED
