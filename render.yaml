@@ -51,8 +51,10 @@ services:
         value: "24"
       - key: RETENTION_DAYS
         value: "30"
+      # Opens voting automatically the first time the service boots with an
+      # unopened poll, so the poll can go live without the admin panel.
       - key: AUTO_START_POLL
-        value: "false"
+        value: "true"
       - key: TRUST_PROXY
         value: "1"
       - key: OTP_ENABLED
