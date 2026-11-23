@@ -178,7 +178,15 @@ SMS. For hCaptcha, set `CAPTCHA_ENABLED=true` with `HCAPTCHA_SITE_KEY` and `HCAP
 
 - Content-Security-Policy, `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`.
 - Cross-origin state-changing requests refused.
-- Admin password stored as an scrypt hash; sign-in is rate-limited and failures are audited.
+- Admin sign-in is rate-limited and every failure is audited.
+- The admin credential may be either `ADMIN_PASSWORD_HASH` (an scrypt hash, preferred) or
+  `ADMIN_PASSWORD` (the password itself, which the host can generate for you). A valid hash
+  always takes precedence. **The trade-off, stated plainly:** a hash protects a password
+  that lives in a database, where a leak would otherwise expose it. This one lives in the
+  hosting provider's environment store, alongside `DATA_ENCRYPTION_KEY` — and anyone who
+  can read that store can already decrypt every voter record, which is strictly worse. So
+  hashing it there adds little, while a hash too long to paste correctly adds nothing. Use
+  the hash where you can paste it reliably; use the generated password where you cannot.
 - The admin interface is a separate page — its markup is never served to voters.
 - `.env` and `data/` are gitignored. Never commit secrets.
 

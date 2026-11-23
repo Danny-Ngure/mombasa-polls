@@ -362,7 +362,10 @@ async function build(opts) {
     }
     const { username, password } = req.body || {};
     const userOk = safeEqual(String(username || ''), config.adminUser);
-    const passOk = config.adminPasswordHash
+    /* Use the hash only when it is actually usable. A truncated or mangled
+       hash previously took precedence and locked the panel even though a
+       valid ADMIN_PASSWORD was configured alongside it. */
+    const passOk = isValidStoredHash(config.adminPasswordHash)
       ? verifyPassword(String(password || ''), config.adminPasswordHash)
       : (!!config.adminPasswordPlain
          && safeEqual(String(password || ''), config.adminPasswordPlain));
@@ -522,6 +525,9 @@ async function build(opts) {
       length: config.adminPasswordHash.length,
       wellFormed: isValidStoredHash(config.adminPasswordHash),
     },
+    // Which credential the login route will actually use.
+    adminAuth: isValidStoredHash(config.adminPasswordHash) ? 'hash'
+      : (config.adminPasswordPlain ? 'password' : 'NONE - cannot sign in'),
   }));
 
   /* ------------------------------------------------------------ server */

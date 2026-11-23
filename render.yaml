@@ -44,9 +44,10 @@ services:
         generateValue: true
       - key: ADMIN_USER
         value: admin
-      # Required. Produce locally with: npm run keys -- "YourStrongPassword"
-      - key: ADMIN_PASSWORD_HASH
-        sync: false
+      # Render generates this and shows it in the dashboard (Environment ->
+      # click the eye icon). Nothing long has to be pasted by hand.
+      - key: ADMIN_PASSWORD
+        generateValue: true
       - key: POLL_HOURS
         value: "24"
       - key: RETENTION_DAYS

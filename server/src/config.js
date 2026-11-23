@@ -44,10 +44,16 @@ const config = {
   cookieSecret: secret('COOKIE_SECRET', 32),
   hashPepper: secret('HASH_PEPPER', 32),
 
-  // Admin
+  // Admin. A hashed password (ADMIN_PASSWORD_HASH) is preferred. ADMIN_PASSWORD
+  // is also accepted in production so a host can generate the credential itself
+  // instead of an operator pasting a long hash by hand. The trade-off is
+  // deliberate and documented in the README: this secret lives in the same
+  // environment store as DATA_ENCRYPTION_KEY, so anyone who can read it can
+  // already decrypt the voter records - hashing it there buys little, and a
+  // hash nobody can paste correctly buys nothing at all.
   adminUser: process.env.ADMIN_USER || 'admin',
   adminPasswordHash: process.env.ADMIN_PASSWORD_HASH || '',
-  adminPasswordPlain: isProd ? '' : (process.env.ADMIN_PASSWORD || 'mombasa-dev'),
+  adminPasswordPlain: process.env.ADMIN_PASSWORD || (isProd ? '' : 'mombasa-dev'),
 
   // Storage. Managed Postgres add-ons inject different variable names:
   // Render uses DATABASE_URL, Vercel/Neon and Supabase use POSTGRES_URL.
@@ -92,7 +98,14 @@ const config = {
   hcaptchaSiteKey: process.env.HCAPTCHA_SITE_KEY || '',
 };
 
-if (isProd && !config.adminPasswordHash) missing.push('ADMIN_PASSWORD_HASH');
+/* Loose shape check only - crypto.js owns the authoritative one but requires
+   this module, so it cannot be imported here. */
+const looksLikeHash = (v) => /^scrypt\$[0-9a-f]{32}\$[0-9a-f]{128}$/.test(v)
+                          || /^[A-Za-z0-9_-]{105,112}$/.test(v);
+
+if (isProd && !looksLikeHash(config.adminPasswordHash) && !config.adminPasswordPlain) {
+  missing.push('ADMIN_PASSWORD_HASH or ADMIN_PASSWORD');
+}
 if (isProd && config.serverless && !config.databaseUrl) {
   missing.push('DATABASE_URL (add a Postgres store to the project)');
 }
